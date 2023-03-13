@@ -15,27 +15,21 @@ namespace Smartwyre.DeveloperTest.Services
         {
             var account = _accountDataStore.GetAccount(request.DebtorAccountNumber);
             if (account == null)
-            {
-                return new MakePaymentResult { Success = false };
-            }
+                return CreateFailResult();
             
-            var result = new MakePaymentResult{ Success = true };
-
             var payment = PaymentFactory.Create(request.PaymentScheme, account);
             if (!payment.ValidateRequest(request))
-            {
-                result.Success = false;
-            }
+                return CreateFailResult();
 
-            if (result.Success)
-            {
-                account.Balance -= request.Amount;
+            account.Balance -= request.Amount;
+            _accountDataStore.UpdateAccount(account);
 
-                var accountDataStoreUpdateData = new AccountDataStore();
-                accountDataStoreUpdateData.UpdateAccount(account);
-            }
+            return new MakePaymentResult{ Success = true };
+        }
 
-            return result;
+        private static MakePaymentResult CreateFailResult()
+        {
+            return new MakePaymentResult { Success = false };
         }
     }
 }

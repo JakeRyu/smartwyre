@@ -1,7 +1,5 @@
 ﻿using Smartwyre.DeveloperTest.Data;
 using Smartwyre.DeveloperTest.Types;
-using System.Configuration;
-using System.Security;
 
 namespace Smartwyre.DeveloperTest.Services
 {
@@ -23,32 +21,10 @@ namespace Smartwyre.DeveloperTest.Services
             
             var result = new MakePaymentResult{ Success = true };
 
-            switch (request.PaymentScheme)
+            var payment = PaymentFactory.Create(request.PaymentScheme, account);
+            if (!payment.ValidateRequest(request))
             {
-                case PaymentScheme.BankToBankTransfer:
-                    var bankTransferPayment = new BankToBankTransferPayment(account);
-                    if (!bankTransferPayment.ValidateRequest(request))
-                    {
-                        result.Success = false;
-                    }
-                   
-                    break;
-
-                case PaymentScheme.ExpeditedPayments:
-                    var expeditedPayment = new ExpeditedPayment(account);
-                    if (!expeditedPayment.ValidateRequest(request))
-                    {
-                        result.Success = false;
-                    }
-                    break;
-
-                case PaymentScheme.AutomatedPaymentSystem:
-                    var autoPayment = new AutomatedPayment(account);
-                    if (!autoPayment.ValidateRequest(request))
-                    {
-                        result.Success = false;
-                    }
-                    break;
+                result.Success = false;
             }
 
             if (result.Success)

@@ -6,12 +6,17 @@ namespace Smartwyre.DeveloperTest.Services
 {
     public class PaymentService : IPaymentService
     {
+        private readonly IAccountDataStore _accountDataStore;
+
+        public PaymentService(IAccountDataStore accountDataStore)
+        {
+            _accountDataStore = accountDataStore;
+        }
         public MakePaymentResult MakePayment(MakePaymentRequest request)
         {
-            var accountDataStoreGetData = new AccountDataStore();
-            Account account = accountDataStoreGetData.GetAccount(request.DebtorAccountNumber);
+            var account = _accountDataStore.GetAccount(request.DebtorAccountNumber);
             
-            var result = new MakePaymentResult();
+            var result = new MakePaymentResult{ Success = true };
 
             switch (request.PaymentScheme)
             {

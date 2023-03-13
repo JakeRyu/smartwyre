@@ -9,7 +9,7 @@ public static class PaymentFactory
             PaymentScheme.BankToBankTransfer => new BankToBankTransferPayment(account),
             PaymentScheme.ExpeditedPayments => new ExpeditedPayment(account),
             PaymentScheme.AutomatedPaymentSystem => new AutomatedPayment(account),
-            _ => new ExpeditedPayment(account) // TBD
+            _ => new ExpeditedPayment(account) // TBD: whether we want to throw exception or provide a default payment
         };
     }
 }
